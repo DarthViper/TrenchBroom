@@ -265,6 +265,26 @@ namespace TrenchBroom {
             invalidateSelectionBounds();
         }
 
+        void MapDocumentCommandFacade::performSwapNodeContents(std::vector<std::tuple<Model::Node*, std::unique_ptr<Model::Node>>>& nodesToSwap) {
+            const auto nodes = kdl::vec_transform(nodesToSwap, [](const auto& t) { return std::get<0>(t); });
+            const auto parents = collectParents(nodes);
+            const auto descendants = collectDescendants(nodes);
+
+            Notifier<const std::vector<Model::Node*>&>::NotifyBeforeAndAfter notifyNodes(nodesWillChangeNotifier, nodesDidChangeNotifier, nodes);
+            Notifier<const std::vector<Model::Node*>&>::NotifyBeforeAndAfter notifyParents(nodesWillChangeNotifier, nodesDidChangeNotifier, parents);
+            Notifier<const std::vector<Model::Node*>&>::NotifyBeforeAndAfter notifyDescendants(nodesWillChangeNotifier, nodesDidChangeNotifier, descendants);
+
+            for (auto& [node, contents] : nodesToSwap) {
+                node->swapContents(*contents);
+            }
+
+            setEntityDefinitions(nodes);
+            setEntityModels(nodes);
+            setTextures(nodes);
+
+            invalidateSelectionBounds();
+        }
+
         std::map<Model::Node*, Model::VisibilityState> MapDocumentCommandFacade::setVisibilityState(const std::vector<Model::Node*>& nodes, const Model::VisibilityState visibilityState) {
             std::map<Model::Node*, Model::VisibilityState> result;
 
