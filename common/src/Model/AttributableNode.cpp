@@ -665,6 +665,14 @@ namespace TrenchBroom {
             return classname(defaultName);
         }
 
+        void AttributableNode::doSwapContents(Node& other) {
+            if (auto* attributableOther = dynamic_cast<AttributableNode*>(&other)) {
+                auto myAttributes = attributes();
+                setAttributes(attributableOther->attributes());
+                attributableOther->setAttributes(std::move(myAttributes));
+            }
+        }
+
         void AttributableNode::removeKillTarget(AttributableNode* attributable) {
             ensure(attributable != nullptr, "attributable is null");
             m_killTargets = kdl::vec_erase(std::move(m_killTargets), attributable);
