@@ -395,7 +395,6 @@ set(COMMON_SOURCE
         ${COMMON_SOURCE_DIR}/View/ReparentNodesCommand.cpp
         ${COMMON_SOURCE_DIR}/View/RepeatStack.cpp
         ${COMMON_SOURCE_DIR}/View/ReplaceTextureDialog.cpp
-        ${COMMON_SOURCE_DIR}/View/ResizeBrushesCommand.cpp
         ${COMMON_SOURCE_DIR}/View/ResizeBrushesTool.cpp
         ${COMMON_SOURCE_DIR}/View/ResizeBrushesToolController.cpp
         ${COMMON_SOURCE_DIR}/View/RotateObjectsHandle.cpp
@@ -918,7 +917,6 @@ set(COMMON_HEADER
         ${COMMON_SOURCE_DIR}/View/ReparentNodesCommand.h
         ${COMMON_SOURCE_DIR}/View/RepeatStack.h
         ${COMMON_SOURCE_DIR}/View/ReplaceTextureDialog.h
-        ${COMMON_SOURCE_DIR}/View/ResizeBrushesCommand.h
         ${COMMON_SOURCE_DIR}/View/ResizeBrushesTool.h
         ${COMMON_SOURCE_DIR}/View/ResizeBrushesToolController.h
         ${COMMON_SOURCE_DIR}/View/RotateObjectsHandle.h
