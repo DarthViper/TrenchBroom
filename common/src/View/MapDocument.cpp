@@ -105,7 +105,6 @@
 #include "View/SetModsCommand.h"
 #include "View/SetTextureCollectionsCommand.h"
 #include "View/SetVisibilityCommand.h"
-#include "View/ShearTexturesCommand.h"
 #include "View/SnapBrushVerticesCommand.h"
 #include "View/SwapNodeContentsCommand.h"
 #include "View/ViewEffectsService.h"
@@ -1941,8 +1940,10 @@ namespace TrenchBroom {
         }
 
         bool MapDocument::shearTextures(const vm::vec2f& factors) {
-            const auto result = executeAndStore(ShearTexturesCommand::shear(factors));
-            return result->success();
+            return applyAndSwap(*this, "Shear Textures", m_selectedBrushFaces, [&](Model::BrushFace& face) {
+                face.shearTexture(factors);
+                return true;
+            });
         }
 
         bool MapDocument::snapVertices(const FloatType snapTo) {
