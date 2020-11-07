@@ -1860,8 +1860,20 @@ namespace TrenchBroom {
         }
 
         bool MapDocument::renameAttribute(const std::string& oldName, const std::string& newName) {
-            const auto result = executeAndStore(ChangeEntityAttributesCommand::rename(oldName, newName));
-            return result->success();
+            const auto renameAttribute = [&](Model::AttributableNode* node) {
+                node->renameAttribute(oldName, newName);
+                return true;
+            };
+
+            return applyAndSwap(*this, "Rename Property", allSelectedAttributableNodes(), [&](Model::Node& node) {
+                return node.accept(kdl::overload(
+                    [&](Model::WorldNode* world)   { return renameAttribute(world); },
+                    [&](Model::LayerNode* layer)   { return renameAttribute(layer); },
+                    [&](Model::GroupNode* group)   { return renameAttribute(group); },
+                    [&](Model::EntityNode* entity) { return renameAttribute(entity); },
+                    [] (Model::BrushNode*)         { return true; }
+                ));
+            });
         }
 
         bool MapDocument::removeAttribute(const std::string& name) {
