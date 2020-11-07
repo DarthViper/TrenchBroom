@@ -522,8 +522,6 @@ namespace TrenchBroom {
 
             void clearEntityModels();
 
-            class SetEntityModels;
-            class UnsetEntityModels;
             void setEntityModels();
             void setEntityModels(const std::vector<Model::Node*>& nodes);
             void unsetEntityModels();
