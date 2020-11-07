@@ -99,7 +99,6 @@
 #include "View/ReparentNodesCommand.h"
 #include "View/CopyTexCoordSystemFromFaceCommand.h"
 #include "View/RepeatStack.h"
-#include "View/RotateTexturesCommand.h"
 #include "View/SelectionCommand.h"
 #include "View/SetLockStateCommand.h"
 #include "View/SetCurrentLayerCommand.h"
@@ -1935,8 +1934,10 @@ namespace TrenchBroom {
         }
 
         bool MapDocument::rotateTextures(const float angle) {
-            const auto result = executeAndStore(RotateTexturesCommand::rotate(angle));
-            return result->success();
+            return applyAndSwap(*this, "Rotate Textures", m_selectedBrushFaces, [&](Model::BrushFace& face) {
+                face.rotateTexture(angle);
+                return true;
+            });
         }
 
         bool MapDocument::shearTextures(const vm::vec2f& factors) {
