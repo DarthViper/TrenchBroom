@@ -286,7 +286,6 @@ set(COMMON_SOURCE
         ${COMMON_SOURCE_DIR}/View/ControlListBox.cpp
         ${COMMON_SOURCE_DIR}/View/ControlListBox.cpp
         ${COMMON_SOURCE_DIR}/View/ConvertEntityColorCommand.cpp
-        ${COMMON_SOURCE_DIR}/View/CopyTexCoordSystemFromFaceCommand.cpp
         ${COMMON_SOURCE_DIR}/View/CrashDialog.cpp
         ${COMMON_SOURCE_DIR}/View/CreateBrushToolBase.cpp
         ${COMMON_SOURCE_DIR}/View/CreateComplexBrushTool.cpp
@@ -802,7 +801,6 @@ set(COMMON_HEADER
         ${COMMON_SOURCE_DIR}/View/ContainerBar.h
         ${COMMON_SOURCE_DIR}/View/ControlListBox.h
         ${COMMON_SOURCE_DIR}/View/ConvertEntityColorCommand.h
-        ${COMMON_SOURCE_DIR}/View/CopyTexCoordSystemFromFaceCommand.h
         ${COMMON_SOURCE_DIR}/View/CrashDialog.h
         ${COMMON_SOURCE_DIR}/View/CreateBrushToolBase.h
         ${COMMON_SOURCE_DIR}/View/CreateComplexBrushTool.h
