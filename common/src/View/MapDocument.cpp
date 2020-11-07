@@ -1877,8 +1877,20 @@ namespace TrenchBroom {
         }
 
         bool MapDocument::removeAttribute(const std::string& name) {
-            const auto result = executeAndStore(ChangeEntityAttributesCommand::remove(name));
-            return result->success();
+            const auto removeAttribute = [&](Model::AttributableNode* node) {
+                node->removeAttribute(name);
+                return true;
+            };
+
+            return applyAndSwap(*this, "Remove Property", allSelectedAttributableNodes(), [&](Model::Node& node) {
+                return node.accept(kdl::overload(
+                    [&](Model::WorldNode* world)   { return removeAttribute(world); },
+                    [&](Model::LayerNode* layer)   { return removeAttribute(layer); },
+                    [&](Model::GroupNode* group)   { return removeAttribute(group); },
+                    [&](Model::EntityNode* entity) { return removeAttribute(entity); },
+                    [] (Model::BrushNode*)         { return true; }
+                ));
+            });
         }
 
         bool MapDocument::convertEntityColorRange(const std::string& name, Assets::ColorRange::Type range) {
