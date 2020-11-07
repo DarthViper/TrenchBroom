@@ -156,10 +156,12 @@ namespace TrenchBroom {
         }
 
         void EntityNode::setModelFrame(const Assets::EntityModelFrame* modelFrame) {
-            const auto oldBounds = physicalBounds();
-            m_modelFrame = modelFrame;
-            nodePhysicalBoundsDidChange(oldBounds);
-            cacheAttributes();
+            if (modelFrame != m_modelFrame) {
+                const auto oldBounds = physicalBounds();
+                m_modelFrame = modelFrame;
+                nodePhysicalBoundsDidChange(oldBounds);
+                cacheAttributes();
+            }
         }
 
         void EntityNode::transform(const vm::mat4x4& transformation) {
