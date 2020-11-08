@@ -107,6 +107,7 @@
 #include "View/SnapBrushVerticesCommand.h"
 #include "View/SwapNodeContentsCommand.h"
 #include "View/ViewEffectsService.h"
+#include "kdl/string_format.h"
 
 #include <kdl/collection_utils.h>
 #include <kdl/map_utils.h>
@@ -1184,10 +1185,16 @@ namespace TrenchBroom {
             if (!hasSelectedNodes() || !m_selectedNodes.hasOnlyGroups())
                 return;
             
-            const std::vector<Model::AttributableNode*> groups = kdl::vec_element_cast<Model::AttributableNode*>(m_selectedNodes.groups());
-
-            const Transaction transaction(this, "Rename Groups");
-            executeAndStore(ChangeEntityAttributesCommand::setForNodes(groups, Model::AttributeNames::GroupName, name));
+            const auto commandName = kdl::str_plural("Rename ", m_selectedNodes.groupCount(), "Group", "Groups");
+            applyAndSwap(*this, commandName, m_selectedNodes.groups(), [&](Model::Node& node) {
+                return node.accept(kdl::overload(
+                    [] (Model::WorldNode*)       { return true; },
+                    [] (Model::LayerNode*)       { return true; },
+                    [&](Model::GroupNode* group) { group->addOrUpdateAttribute(Model::AttributeNames::GroupName, name); return true; },
+                    [] (Model::EntityNode*)      { return true; },
+                    [] (Model::BrushNode*)       { return true; }
+                ));
+            });
         }
 
         void MapDocument::openGroup(Model::GroupNode* group) {
