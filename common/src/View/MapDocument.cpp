@@ -1227,10 +1227,15 @@ namespace TrenchBroom {
         }
 
         void MapDocument::renameLayer(Model::LayerNode* layer, const std::string& name) {
-            const Transaction transaction(this, "Rename Layer");
-
-            const auto result = executeAndStore(ChangeEntityAttributesCommand::setForNodes({ layer }, Model::AttributeNames::LayerName, name));
-            unused(result);
+            applyAndSwap(*this, "Rename Layer", std::vector<Model::Node*>{layer}, [&](Model::Node& node) {
+                return node.accept(kdl::overload(
+                    [] (Model::WorldNode*)   { return true; },
+                    [&](Model::LayerNode* l) { l->addOrUpdateAttribute(Model::AttributeNames::LayerName, name); return true; },
+                    [] (Model::GroupNode*)   { return true; },
+                    [] (Model::EntityNode*)  { return true; },
+                    [] (Model::BrushNode*)   { return true; }
+                ));
+            });
         }
 
         bool MapDocument::moveLayerByOne(Model::LayerNode* layer, MoveDirection direction) {
