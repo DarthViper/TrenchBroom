@@ -137,6 +137,51 @@
 
 namespace TrenchBroom {
     namespace View {
+        /**
+         * Clone each of the given nodes, apply the given lambda to the clone, and swap the contents of each original node with those of the modified clone.
+         *
+         * Returns true if the given lambda could be applied successfully to all clones and false otherwise. If the lambda fails for any clone, then no
+         * node contents will be swapped, and the original nodes remain unmo
+         */
+        template <typename N, typename L>
+        static bool applyAndSwap(MapDocument& document, const std::string& commandName, const std::vector<N*>& nodes, L lambda) {
+            auto newNodes = std::vector<std::tuple<Model::Node*, std::unique_ptr<Model::Node>>>{};
+            newNodes.reserve(nodes.size());
+
+            bool success = true;
+            std::transform(std::begin(nodes), std::end(nodes), std::back_inserter(newNodes), [&](auto* node) {
+                auto newNode = std::unique_ptr<Model::Node>(node->clone(document.worldBounds()));
+                success = success && lambda(*newNode);
+                return std::make_tuple(node, std::move(newNode));
+            });
+
+            if (success) {
+                document.swapNodeContents(commandName, std::move(newNodes));
+            }
+
+            return success;
+        }
+        template <typename L>
+        static bool applyAndSwap(MapDocument& document, const std::string& commandName, const std::vector<Model::BrushFaceHandle>& faces, L lambda) {
+            auto newNodes = std::vector<std::tuple<Model::Node*, std::unique_ptr<Model::Node>>>{};
+
+            bool success = true;
+            std::transform(std::begin(faces), std::end(faces), std::back_inserter(newNodes), [&](const auto& faceHandle) {
+                auto* node = faceHandle.node();
+                auto brush = node->brush();
+                success = success && lambda(brush.face(faceHandle.faceIndex()));
+
+                auto newNode = std::make_unique<Model::BrushNode>(std::move(brush));
+                return std::make_tuple(node, std::move(newNode));
+            });
+
+            if (success) {
+                document.swapNodeContents(commandName, std::move(newNodes));
+            }
+
+            return success;
+        }
+
         const vm::bbox3 MapDocument::DefaultWorldBounds(-32768.0, 32768.0);
         const std::string MapDocument::DefaultDocumentName("unnamed.map");
 
